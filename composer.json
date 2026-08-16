@@ -6,11 +6,18 @@
   "keywords": [
     "query-builder",
     "eloquent",
-    "array",
-    "collection",
-    "filter",
+    "array-query-builder",
     "in-memory",
-    "php"
+    "in-memory-query-builder",
+    "collection",
+    "array-filter",
+    "json-query",
+    "array-search",
+    "linq",
+    "laravel",
+    "php",
+    "data-filter",
+    "fluent-query"
   ],
   "homepage": "https://github.com/SalvatoreCervone/memoryquerybuilder",
   "authors": [

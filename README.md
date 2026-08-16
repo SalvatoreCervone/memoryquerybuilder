@@ -38,7 +38,7 @@ $result = MemoryQueryBuilder::from($myArray)
 ## Installation
 
 ```bash
-composer require salvatorecervone/memory-query-builder
+composer require salvatorecervone/memoryquerybuilder
 ```
 
 Or clone directly:

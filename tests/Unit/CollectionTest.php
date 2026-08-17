@@ -263,4 +263,75 @@ class CollectionTest extends TestCase
         $col = $this->col();
         $this->assertJson((string) $col);
     }
+
+    public function testToObjects(): void
+    {
+        $objectsCol = $this->col()->toObjects();
+        $first = $objectsCol->first();
+
+        $this->assertIsObject($first);
+        $this->assertEquals(1, $first->id);
+        $this->assertEquals('Alice', $first->name);
+
+        // Idempotent if already objects
+        $sameCol = $objectsCol->toObjects();
+        $this->assertIsObject($sameCol->first());
+        $this->assertEquals('Alice', $sameCol->first()->name);
+    }
+
+    public function testToObjectsRecursive(): void
+    {
+        $data = [
+            ['id' => 1, 'meta' => ['role' => 'admin', 'details' => ['level' => 5]]],
+        ];
+        $col = Collection::make($data)->toObjects(recursive: true);
+        $first = $col->first();
+
+        $this->assertIsObject($first);
+        $this->assertIsObject($first->meta);
+        $this->assertIsObject($first->meta->details);
+        $this->assertEquals(5, $first->meta->details->level);
+    }
+
+    public function testToArrays(): void
+    {
+        $obj1 = (object) ['id' => 1, 'name' => 'Alice'];
+        $obj2 = (object) ['id' => 2, 'name' => 'Bob'];
+
+        $col = Collection::make([$obj1, $obj2])->toArrays();
+        $first = $col->first();
+
+        $this->assertIsArray($first);
+        $this->assertEquals(1, $first['id']);
+        $this->assertEquals('Alice', $first['name']);
+
+        // Idempotent if already arrays
+        $sameCol = $col->toArrays();
+        $this->assertIsArray($sameCol->first());
+        $this->assertEquals('Alice', $sameCol->first()['name']);
+    }
+
+    public function testToArraysRecursive(): void
+    {
+        $obj = (object) [
+            'id' => 1,
+            'meta' => (object) ['role' => 'admin', 'details' => (object) ['level' => 5]],
+        ];
+        $col = Collection::make([$obj])->toArrays(recursive: true);
+        $first = $col->first();
+
+        $this->assertIsArray($first);
+        $this->assertIsArray($first['meta']);
+        $this->assertIsArray($first['meta']['details']);
+        $this->assertEquals(5, $first['meta']['details']['level']);
+    }
+
+    public function testObjectArrayAliases(): void
+    {
+        $data = [['id' => 1, 'name' => 'Alice']];
+
+        $this->assertIsObject(Collection::make($data)->toObject()->first());
+        $this->assertIsArray(Collection::make([(object) ['id' => 1]])->toAssocArray()->first());
+        $this->assertIsArray(Collection::make([(object) ['id' => 1]])->toAssoc()->first());
+    }
 }

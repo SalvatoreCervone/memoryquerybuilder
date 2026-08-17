@@ -217,6 +217,83 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable, JsonSeria
         return new static($results);
     }
 
+    /**
+     * Convert collection items to stdClass objects.
+     * Items that are already objects remain unchanged.
+     */
+    public function toObjects(bool $recursive = false): static
+    {
+        return $this->map(function ($item) use ($recursive) {
+            if (!is_array($item)) {
+                return $item;
+            }
+
+            if ($recursive) {
+                return json_decode(json_encode($item));
+            }
+
+            return (object) $item;
+        });
+    }
+
+    /**
+     * Alias of toObjects().
+     */
+    public function toObject(bool $recursive = false): static
+    {
+        return $this->toObjects($recursive);
+    }
+
+    /**
+     * Convert collection items to associative arrays.
+     * Items that are already arrays remain unchanged.
+     */
+    public function toArrays(bool $recursive = false): static
+    {
+        return $this->map(function ($item) use ($recursive) {
+            if (is_array($item)) {
+                if ($recursive) {
+                    return json_decode(json_encode($item), true);
+                }
+                return $item;
+            }
+
+            if ($recursive) {
+                return json_decode(json_encode($item), true);
+            }
+
+            if ($item instanceof JsonSerializable || $item instanceof \stdClass) {
+                return (array) $item;
+            }
+
+            if (is_object($item) && method_exists($item, 'toArray')) {
+                return $item->toArray();
+            }
+
+            if (is_object($item)) {
+                return (array) $item;
+            }
+
+            return $item;
+        });
+    }
+
+    /**
+     * Alias of toArrays().
+     */
+    public function toAssocArray(bool $recursive = false): static
+    {
+        return $this->toArrays($recursive);
+    }
+
+    /**
+     * Alias of toArrays().
+     */
+    public function toAssoc(bool $recursive = false): static
+    {
+        return $this->toArrays($recursive);
+    }
+
     // -------------------------------------------------------------------------
     // Retrieval
     // -------------------------------------------------------------------------

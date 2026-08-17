@@ -5,7 +5,7 @@
 
 [![PHP](https://img.shields.io/badge/PHP-8.1%2B-blue?logo=php)](https://www.php.net/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-127%20passed-brightgreen)](#running-tests)
+[![Tests](https://img.shields.io/badge/tests-132%20passed-brightgreen)](#running-tests)
 
 ```php
 $result = MemoryQueryBuilder::from($myArray)
@@ -351,12 +351,16 @@ $q->max('score');         // mixed (null if empty)
 ```php
 $col = MemoryQueryBuilder::from($data)->get();
 
-// Transformation
+// Transformation & Type Conversion
 $col->map(fn($item) => $item['name']);
 $col->filter(fn($item) => $item['active']);
 $col->reduce(fn($carry, $item) => $carry + $item['score'], 0);
 $col->each(fn($item) => processItem($item));  // return false to break
 $col->transform(fn($item) => [...$item, 'extra' => true]);  // in-place
+$col->toObjects();                           // convert array items to stdClass objects
+$col->toObjects(recursive: true);            // deep convert nested arrays to objects
+$col->toArrays();                            // convert objects to associative arrays
+$col->toArrays(recursive: true);             // deep convert nested objects to arrays
 
 // Sorting
 $col->sortBy('name');
@@ -418,7 +422,7 @@ vendor/bin/phpunit --testdox
 ```
 
 ```
-OK (127 tests, 197 assertions)
+OK (132 tests, 218 assertions)
 ```
 
 ---
